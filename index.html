@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>購物車示範網站</title>
+<style>
+  body { font-family:'Noto Sans',sans-serif; background:#f7f7f7; padding:20px; }
+  h2 { color:#333; }
+  .product { display:flex; justify-content:space-between; padding:12px; background:white; margin-bottom:8px; border-radius:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+  .product input[type=checkbox]{ margin-right:10px; }
+  button{ padding:12px 24px; background:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
+  button:hover{ background:#45a049; }
+  #cart-text { width:100%; height:150px; margin-top:10px; border-radius:8px; padding:10px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<h2>商品選購</h2>
+
+<div id="product-list">
+  <div class="product">
+    <label><input type="checkbox" data-name="上衣 Bellot 秋冬厚棉長袖" data-price="290"> 上衣 Bellot 秋冬厚棉長袖 - 290元</label>
+  </div>
+  <div class="product">
+    <label><input type="checkbox" data-name="褲子 Bellot 秋冬牛仔褲" data-price="350"> 褲子 Bellot 秋冬牛仔褲 - 350元</label>
+  </div>
+  <div class="product">
+    <label><input type="checkbox" data-name="帽子 Bellot 棉質帽" data-price="150"> 帽子 Bellot 棉質帽 - 150元</label>
+  </div>
+</div>
+
+<p>總金額：<span id="total">0</span> 元</p>
+
+<button id="generate-cart">生成購物清單文字</button>
+<textarea id="cart-text" readonly placeholder="購物清單文字會出現在這裡，可以直接複製貼到 LINE"></textarea>
+
+<script>
+const checkboxes = document.querySelectorAll('#product-list input[type=checkbox]');
+const totalEl = document.getElementById('total');
+const cartTextEl = document.getElementById('cart-text');
+
+// 即時計算總金額
+checkboxes.forEach(cb => {
+  cb.addEventListener('change', () => {
+    let total = 0;
+    checkboxes.forEach(box => { if(box.checked) total += parseInt(box.dataset.price); });
+    totalEl.textContent = total;
+  });
+});
+
+// 生成購物清單文字並自動複製
+document.getElementById('generate-cart').addEventListener('click', () => {
+  let lines = [];
+  let total = 0;
+  checkboxes.forEach(box => {
+    if(box.checked){
+      lines.push(`${box.dataset.name} - ${box.dataset.price} 元`);
+      total += parseInt(box.dataset.price);
+    }
+  });
+  if(lines.length === 0){
+    cartTextEl.value = "請先勾選商品";
+    return;
+  }
+  lines.push(`總金額：${total} 元`);
+  cartTextEl.value = lines.join("\n");
+  
+  // 自動複製到剪貼簿
+  cartTextEl.select();
+  document.execCommand('copy');
+  alert("購物清單已複製！可以直接貼到 LINE 發送");
+});
+</script>
+
+</body>
+</html>
